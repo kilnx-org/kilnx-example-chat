@@ -25,16 +25,19 @@ A team of 15 developers at a fictional company (XPTO Inc.) uses this chat to coo
 ## Run locally
 
 ```bash
+# Install Kilnx
+curl -fsSL https://raw.githubusercontent.com/kilnx-org/kilnx/main/install.sh | sh
+
+# Clone and run
+git clone https://github.com/kilnx-org/kilnx-example-chat.git
+cd kilnx-example-chat
 kilnx run app.kilnx
-```
 
-## Seed demo data
-
-Populates 15 users, 8 channels, 70+ messages, threads, reactions, and DMs:
-
-```bash
+# Seed demo data (15 users, 8 channels, 70+ messages)
 ./seed.sh
 ```
+
+Open http://localhost:8080 and log in with a demo account.
 
 ## Demo accounts
 
@@ -44,10 +47,6 @@ Populates 15 users, 8 channels, 70+ messages, threads, reactions, and DMs:
 | `carol@xpto.dev` | `demo123` | member |
 
 All 15 seeded users share the same password (`demo123`).
-
-## Deploy
-
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/template/kilnx-chat)
 
 ## License
 
