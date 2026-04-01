@@ -103,16 +103,17 @@ function initChat() {
 
 document.addEventListener('DOMContentLoaded', initChat);
 
-// Cancel swap if content hasn't changed (prevents blink)
-var lastContent = '';
+// Cancel swap if message count hasn't changed (prevents blink from timeago changes)
+var lastMsgCount = -1;
 document.body.addEventListener('htmx:beforeSwap', function(e) {
   if (e.detail.target && e.detail.target.id === 'chat-messages') {
-    var newContent = e.detail.xhr.responseText.trim();
-    if (newContent === lastContent) {
+    var resp = e.detail.xhr.responseText;
+    var newCount = (resp.match(/msg-row/g) || []).length;
+    if (newCount === lastMsgCount) {
       e.detail.shouldSwap = false;
       return;
     }
-    lastContent = newContent;
+    lastMsgCount = newCount;
   }
 });
 
