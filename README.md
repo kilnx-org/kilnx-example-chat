@@ -41,20 +41,9 @@ Populates 15 users, 8 channels, 70+ messages, threads, reactions, and DMs:
 | Email | Password | Role |
 |-------|----------|------|
 | `alice@xpto.dev` | `demo123` | admin |
-| `bob@xpto.dev` | `demo123` | admin |
 | `carol@xpto.dev` | `demo123` | member |
-| `david@xpto.dev` | `demo123` | member |
-| `elena@xpto.dev` | `demo123` | member |
-| `frank@xpto.dev` | `demo123` | member |
-| `grace@xpto.dev` | `demo123` | member |
-| `hugo@xpto.dev` | `demo123` | member |
-| `iris@xpto.dev` | `demo123` | member |
-| `jake@xpto.dev` | `demo123` | member |
-| `kira@xpto.dev` | `demo123` | member |
-| `leo@xpto.dev` | `demo123` | member |
-| `maya@xpto.dev` | `demo123` | member |
-| `nina@xpto.dev` | `demo123` | member |
-| `omar@xpto.dev` | `demo123` | member |
+
+All 15 seeded users share the same password (`demo123`).
 
 ## Deploy
 
