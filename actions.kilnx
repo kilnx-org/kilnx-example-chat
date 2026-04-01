@@ -39,7 +39,11 @@ action /dm/:id/send method POST requires auth
   redirect /dm/:id
 
 action /messages/:id/react method POST requires auth
-  query: INSERT INTO reaction (emoji, author_id, message_id) VALUES (:emoji, :current_user.id, :id)
+  query: INSERT OR IGNORE INTO reaction (emoji, author_id, message_id) VALUES (:emoji, :current_user.id, :id)
+  redirect /channel/:channel_id
+
+action /messages/:id/unreact/:emoji method POST requires auth
+  query: DELETE FROM reaction WHERE emoji = :emoji AND author_id = :current_user.id AND message_id = :id
   redirect /channel/:channel_id
 
 action /messages/:id/pin method POST requires auth

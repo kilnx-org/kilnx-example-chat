@@ -1,7 +1,7 @@
 # Channel view (main chat)
 page /channel/:id requires auth layout slack
   query ch: SELECT c.id, c.name, c.description, c.created, u.name as creator FROM channel c JOIN user u ON u.id = c.creator_id WHERE c.id = :id
-  query messages: SELECT m.id, m.body, m.author_id, m.reply_to, m.edited_at, m.pinned, m.attachment, m.created, u.name as author, u.avatar_color, (SELECT COUNT(*) FROM message r WHERE r.reply_to = m.id) as reply_count, (SELECT GROUP_CONCAT(r.emoji, ' ') FROM reaction r WHERE r.message_id = m.id) as reactions FROM message m JOIN user u ON u.id = m.author_id WHERE m.channel_id = :id AND m.reply_to = 0 ORDER BY m.created ASC paginate 100
+  query messages: SELECT m.id, m.body, m.author_id, m.reply_to, m.edited_at, m.pinned, m.attachment, m.created, u.name as author, u.avatar_color, (SELECT COUNT(*) FROM message r WHERE r.reply_to = m.id) as reply_count, (SELECT GROUP_CONCAT(r2.emoji || ':' || cnt || ':' || names, '|') FROM (SELECT r2.emoji, COUNT(*) as cnt, GROUP_CONCAT(u2.name, ', ') as names FROM reaction r2 JOIN user u2 ON u2.id = r2.author_id WHERE r2.message_id = m.id GROUP BY r2.emoji) r2) as reactions FROM message m JOIN user u ON u.id = m.author_id WHERE m.channel_id = :id AND m.reply_to = 0 ORDER BY m.created ASC paginate 100
   html
     <div class="flex flex-col flex-1 overflow-hidden">
       <div class="shrink-0 border-b border-[#ffffff0d]">
@@ -34,7 +34,7 @@ page /channel/:id requires auth layout slack
               {{if edited_at}}<span class="text-[11px] text-[#616061]">(edited)</span>{{end}}
             </div>
             <p class="text-[15px] text-[#d1d2d3] leading-[1.46] break-words">{body|markdown|unfurl|raw}</p>
-            {{if reactions}}<div class="flex gap-1 mt-1.5 flex-wrap">{reactions|raw}</div>{{end}}
+            {{if reactions}}<div class="flex gap-1 mt-1.5 flex-wrap reaction-pills" data-reactions="{reactions}" data-msgid="{id}" data-chid="{ch.id}" data-csrf="{csrf}"></div>{{end}}
             {{if reply_count}}<a href="/channel/{ch.id}/thread/{id}" class="inline-flex items-center gap-1.5 mt-1 text-[#1d9bd1] text-xs font-semibold hover:underline"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg> {reply_count} replies</a>{{end}}
           </div>
           <div class="msg-actions absolute -top-3 right-2 flex items-center bg-[#1a1d21] border border-[#ffffff1a] rounded-lg shadow-lg overflow-hidden">

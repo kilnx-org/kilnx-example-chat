@@ -1,7 +1,7 @@
 # Messages fragment for htmx polling
 fragment /channel/:id/messages
   query ch: SELECT id FROM channel WHERE id = :id
-  query messages: SELECT m.id, m.body, m.author_id, m.reply_to, m.edited_at, m.pinned, m.attachment, m.created, u.name as author, u.avatar_color, (SELECT COUNT(*) FROM message r WHERE r.reply_to = m.id) as reply_count, (SELECT GROUP_CONCAT(r.emoji, ' ') FROM reaction r WHERE r.message_id = m.id) as reactions FROM message m JOIN user u ON u.id = m.author_id WHERE m.channel_id = :id AND m.reply_to = 0 ORDER BY m.created ASC paginate 100
+  query messages: SELECT m.id, m.body, m.author_id, m.reply_to, m.edited_at, m.pinned, m.attachment, m.created, u.name as author, u.avatar_color, (SELECT COUNT(*) FROM message r WHERE r.reply_to = m.id) as reply_count, (SELECT GROUP_CONCAT(r2.emoji || ':' || cnt || ':' || names, '|') FROM (SELECT r2.emoji, COUNT(*) as cnt, GROUP_CONCAT(u2.name, ', ') as names FROM reaction r2 JOIN user u2 ON u2.id = r2.author_id WHERE r2.message_id = m.id GROUP BY r2.emoji) r2) as reactions FROM message m JOIN user u ON u.id = m.author_id WHERE m.channel_id = :id AND m.reply_to = 0 ORDER BY m.created ASC paginate 100
   html
     {{each messages}}
     <div class="msg-row flex gap-3 py-1.5 px-2 -mx-2 rounded-lg relative" id="msg-{id}">
@@ -9,7 +9,7 @@ fragment /channel/:id/messages
       <div class="min-w-0 flex-1">
         <div class="flex items-baseline gap-2">{{if pinned}}<span class="text-[#e8912d] text-[11px]">📌</span>{{end}}<span class="text-[15px] font-bold text-white">{author}</span><time class="text-[11px] text-[#616061]">{created|timeago}</time>{{if edited_at}}<span class="text-[11px] text-[#616061]">(edited)</span>{{end}}</div>
         <p class="text-[15px] text-[#d1d2d3] leading-[1.46] break-words">{body|markdown|unfurl|raw}</p>
-        {{if reactions}}<div class="flex gap-1 mt-1.5 flex-wrap">{reactions|raw}</div>{{end}}
+        {{if reactions}}<div class="flex gap-1 mt-1.5 flex-wrap reaction-pills" data-reactions="{reactions}" data-msgid="{id}" data-chid="{ch.id}" data-csrf="{csrf}"></div>{{end}}
         {{if reply_count}}<a href="/channel/{ch.id}/thread/{id}" class="inline-flex items-center gap-1.5 mt-1 text-[#1d9bd1] text-xs font-semibold hover:underline"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg> {reply_count} replies</a>{{end}}
       </div>
       <div class="msg-actions absolute -top-3 right-2 flex items-center bg-[#1a1d21] border border-[#ffffff1a] rounded-lg shadow-lg overflow-hidden">
