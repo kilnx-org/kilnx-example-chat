@@ -1,6 +1,7 @@
 // Toolbar functions
 function wrapText(b, a) {
   var i = document.getElementById('msg-input');
+  if (!i) return;
   var s = i.selectionStart, e = i.selectionEnd, t = i.value;
   i.value = t.slice(0, s) + b + t.slice(s, e) + a + t.slice(e);
   i.focus();
@@ -9,7 +10,9 @@ function wrapText(b, a) {
 }
 
 function insertLine(prefix) {
-  var i = document.getElementById('msg-input'), s = i.selectionStart, t = i.value;
+  var i = document.getElementById('msg-input');
+  if (!i) return;
+  var s = i.selectionStart, t = i.value;
   var nl = s > 0 && t[s - 1] !== '\n' ? '\n' : '';
   i.value = t.slice(0, s) + nl + prefix + t.slice(s);
   var pos = s + nl.length + prefix.length;
@@ -19,7 +22,9 @@ function insertLine(prefix) {
 }
 
 function insertBlock(fence) {
-  var i = document.getElementById('msg-input'), s = i.selectionStart, e = i.selectionEnd, t = i.value;
+  var i = document.getElementById('msg-input');
+  if (!i) return;
+  var s = i.selectionStart, e = i.selectionEnd, t = i.value;
   var sel = t.slice(s, e) || 'code';
   var nl = s > 0 && t[s - 1] !== '\n' ? '\n' : '';
   i.value = t.slice(0, s) + nl + fence + '\n' + sel + '\n' + fence + t.slice(e);
@@ -34,13 +39,14 @@ function autoSize(el) {
   el.style.height = Math.min(el.scrollHeight, 150) + 'px';
 }
 
-// Render reaction pills from data attributes
+// Render reaction pills from data-reactions attribute
 // Format: "👍:2:Alice, Bob|🔥:1:Carol"
 function renderReactions() {
   document.querySelectorAll('.reaction-pills').forEach(function(el) {
     var raw = el.dataset.reactions;
-    if (!raw || el.dataset.rendered) return;
-    el.dataset.rendered = '1';
+    if (!raw) return;
+    // Clear and re-render every time (no caching)
+    el.replaceChildren();
     var msgid = el.dataset.msgid;
     var chid = el.dataset.chid;
     var csrf = el.dataset.csrf;
@@ -52,41 +58,51 @@ function renderReactions() {
       form.method = 'POST';
       form.action = '/messages/' + msgid + '/react';
       form.style.display = 'inline';
-      var csrfInput = document.createElement('input');
-      csrfInput.type = 'hidden'; csrfInput.name = '_csrf'; csrfInput.value = csrf;
-      var chInput = document.createElement('input');
-      chInput.type = 'hidden'; chInput.name = 'channel_id'; chInput.value = chid;
-      var emojiInput = document.createElement('input');
-      emojiInput.type = 'hidden'; emojiInput.name = 'emoji'; emojiInput.value = emoji;
+
+      var ci = document.createElement('input');
+      ci.type = 'hidden'; ci.name = '_csrf'; ci.value = csrf;
+      form.appendChild(ci);
+
+      var chi = document.createElement('input');
+      chi.type = 'hidden'; chi.name = 'channel_id'; chi.value = chid;
+      form.appendChild(chi);
+
+      var ei = document.createElement('input');
+      ei.type = 'hidden'; ei.name = 'emoji'; ei.value = emoji;
+      form.appendChild(ei);
+
       var btn = document.createElement('button');
       btn.type = 'submit';
       btn.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-[#ffffff15] bg-[#ffffff05] text-xs hover:bg-[#ffffff10] hover:border-[#ffffff25] transition cursor-pointer';
       btn.title = names;
-      btn.textContent = emoji + ' ' + count;
-      form.appendChild(csrfInput);
-      form.appendChild(chInput);
-      form.appendChild(emojiInput);
+      var t = document.createTextNode(emoji + ' ' + count);
+      btn.appendChild(t);
       form.appendChild(btn);
       el.appendChild(form);
     });
   });
 }
 
-// Auto-scroll chat to bottom
+// Init
 function initChat() {
   var chat = document.getElementById('chat-messages');
   if (chat) chat.scrollTop = chat.scrollHeight;
 
-  // Confirm deletes
   document.querySelectorAll('[data-confirm]').forEach(function(el) {
-    el.addEventListener('submit', function(e) {
-      if (!confirm(el.dataset.confirm)) e.preventDefault();
-    });
+    if (!el.dataset.bound) {
+      el.dataset.bound = '1';
+      el.addEventListener('submit', function(e) {
+        if (!confirm(el.dataset.confirm)) e.preventDefault();
+      });
+    }
   });
 
   renderReactions();
 }
 
 document.addEventListener('DOMContentLoaded', initChat);
-// Re-render after htmx swaps (polling)
-document.addEventListener('htmx:afterSwap', renderReactions);
+
+// Re-render after htmx swaps
+document.body.addEventListener('htmx:afterSwap', function() {
+  renderReactions();
+});
