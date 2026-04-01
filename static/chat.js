@@ -56,7 +56,7 @@ function renderReactions() {
       var emoji = s[0], count = s[1], names = s.slice(2).join(':');
       var form = document.createElement('form');
       form.method = 'POST';
-      form.action = '/messages/' + msgid + '/react';
+      form.action = '/messages/' + msgid + '/rmreact';
       form.style.display = 'inline';
       form.setAttribute('hx-boost', 'false');
 
