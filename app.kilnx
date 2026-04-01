@@ -288,7 +288,7 @@ page /channel/:id requires auth layout slack
             <label class="p-1 text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] rounded transition cursor-pointer" title="Attach file"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><input type="file" name="attachment" class="hidden" onchange="this.closest('label').querySelector('svg').style.color='#1d9bd1'"></label>
           </div>
           <div class="flex items-center">
-            <input type="text" id="msg-input" name="body" placeholder="Message #{ch.name}" required autofocus class="flex-1 px-4 py-2.5 bg-transparent text-[15px] text-[#d1d2d3] placeholder-[#616061] outline-none" oninput="sendTyping()" autocomplete="off">
+            <textarea id="msg-input" name="body" placeholder="Message #{ch.name}" required autofocus rows="1" class="flex-1 px-4 py-2.5 bg-transparent text-[15px] text-[#d1d2d3] placeholder-[#616061] outline-none resize-none overflow-hidden" oninput="sendTyping();this.style.height='auto';this.style.height=this.scrollHeight+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.closest('form').submit()}"></textarea>
             <button type="submit" class="p-2 mr-2 text-[#9a9b9e] hover:text-[#1d9bd1] transition rounded"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
           </div>
         </form>
