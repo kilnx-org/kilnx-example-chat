@@ -58,6 +58,7 @@ function renderReactions() {
       form.method = 'POST';
       form.action = '/messages/' + msgid + '/react';
       form.style.display = 'inline';
+      form.setAttribute('hx-boost', 'false');
 
       var ci = document.createElement('input');
       ci.type = 'hidden'; ci.name = '_csrf'; ci.value = csrf;
