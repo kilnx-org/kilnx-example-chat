@@ -1,0 +1,55 @@
+action /channels/create method POST requires auth
+  validate
+    name: required min 2
+  query: INSERT INTO channel (name, description, creator_id) VALUES (:name, :description, :current_user.id)
+  redirect /home
+
+action /channel/:id/send method POST requires auth
+  validate
+    body: required
+  query: INSERT INTO message (body, author_id, channel_id, attachment) VALUES (:body, :current_user.id, :id, :attachment)
+  redirect /channel/:id
+
+action /channel/:cid/thread/:mid/reply method POST requires auth
+  validate
+    body: required
+  query: INSERT INTO message (body, author_id, channel_id, reply_to) VALUES (:body, :current_user.id, :cid, :mid)
+  redirect /channel/:cid/thread/:mid
+
+action /messages/:id/edit method POST requires auth
+  validate
+    body: required
+  query: UPDATE message SET body = :body, edited_at = datetime('now') WHERE id = :id AND author_id = :current_user.id
+  redirect /channel/:channel_id
+
+action /messages/:id/delete method POST requires auth
+  query: DELETE FROM reaction WHERE message_id = :id
+  query: DELETE FROM message WHERE id = :id AND author_id = :current_user.id
+  redirect /channel/:channel_id
+
+action /channels/:id/delete method POST requires auth
+  query: DELETE FROM message WHERE channel_id = :id
+  query: DELETE FROM channel WHERE id = :id
+  redirect /home
+
+action /dm/:id/send method POST requires auth
+  validate
+    body: required
+  query: INSERT INTO direct_message (body, sender_id, recipient_id) VALUES (:body, :current_user.id, :id)
+  redirect /dm/:id
+
+action /messages/:id/react method POST requires auth
+  query: INSERT INTO reaction (emoji, author_id, message_id) VALUES (:emoji, :current_user.id, :id)
+  redirect /channel/:channel_id
+
+action /messages/:id/pin method POST requires auth
+  query: UPDATE message SET pinned = CASE WHEN pinned = 1 THEN 0 ELSE 1 END WHERE id = :id
+  redirect /channel/:channel_id
+
+action /channels/:id/favorite method POST requires auth
+  query: INSERT INTO favorite (user_id, channel_id) SELECT :current_user.id, :id WHERE NOT EXISTS (SELECT 1 FROM favorite WHERE user_id = :current_user.id AND channel_id = :id)
+  redirect /channel/:id
+
+action /channels/:id/unfavorite method POST requires auth
+  query: DELETE FROM favorite WHERE user_id = :current_user.id AND channel_id = :id
+  redirect /channel/:id

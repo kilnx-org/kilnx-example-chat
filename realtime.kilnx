@@ -1,0 +1,14 @@
+# ============================================================
+# REAL-TIME
+# ============================================================
+
+# WebSocket for typing indicators
+socket /ws/typing/:room
+  on message
+    broadcast to :room
+
+stream /stream/channels
+  every 5s
+  query: SELECT id, name, (SELECT COUNT(*) FROM message WHERE channel_id = channel.id AND reply_to = 0) as msg_count FROM channel ORDER BY name
+  event: channels-update
+

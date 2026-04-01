@@ -1,0 +1,41 @@
+model user
+  name: text required min 2 max 50
+  email: email unique
+  password: password required
+  role: option [admin, member] default member
+  avatar_color: text default "#6366f1"
+  created: timestamp auto
+
+model channel
+  name: text required unique
+  description: text
+  creator: user required
+  created: timestamp auto
+
+model message
+  body: text required
+  author: user required
+  channel: channel required
+  reply_to: int default 0
+  pinned: bool default false
+  attachment: text
+  edited_at: text
+  created: timestamp auto
+
+model reaction
+  emoji: text required
+  author: user required
+  message_id: int required
+  created: timestamp auto
+
+model favorite
+  user_id: int required
+  channel: channel required
+  created: timestamp auto
+
+model direct_message
+  body: text required
+  sender: user required
+  recipient: user required
+  edited_at: text
+  created: timestamp auto

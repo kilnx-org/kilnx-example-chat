@@ -1,0 +1,53 @@
+# ============================================================
+# DIRECT MESSAGES
+# ============================================================
+
+# DM conversation
+page /dm/:id requires auth layout slack
+  query other: SELECT id, name, email FROM user WHERE id = :id
+  query dms: SELECT d.id, d.body, d.edited_at, d.created, d.sender_id, u.name as author, u.avatar_color FROM direct_message d JOIN user u ON u.id = d.sender_id WHERE (d.sender_id = :current_user.id AND d.recipient_id = :id) OR (d.sender_id = :id AND d.recipient_id = :current_user.id) ORDER BY d.created ASC paginate 100
+  html
+    <section class="flex flex-col flex-1 overflow-hidden">
+      <header class="h-[49px] flex items-center px-4 border-b border-[#ffffff0d] shrink-0">
+        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">{other.name|truncate:1}</div><h1 class="font-bold text-white text-[15px]">{other.name}</h1></div>
+      </header>
+      <article id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4">
+        {{each dms}}
+        <div class="msg-row flex gap-3 py-1.5 px-2 -mx-2 rounded-lg relative"><div class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold mt-0.5" style="background:{avatar_color}">{author|truncate:1}</div><div class="min-w-0 flex-1"><div class="flex items-baseline gap-2"><span class="text-[15px] font-bold text-white">{author}</span> <time class="text-[11px] text-[#616061]">{created|timeago}</time>{{if edited_at}} <span class="text-[11px] text-[#616061]">(edited)</span>{{end}}</div><p class="text-[15px] text-[#d1d2d3] leading-[1.46] break-words">{body|markdown|unfurl|raw}</p></div></div>
+        {{else}}
+        <p class="py-20 text-center text-[#9a9b9e]">Start a conversation with {other.name}.</p>
+        {{end}}
+      </article>
+      <footer class="px-5 pb-4 shrink-0">
+        <form class="relative" method="POST" action="/dm/{other.id}/send"><input type="hidden" name="_csrf" value="{csrf}"><input type="text" name="body" placeholder="Message {other.name}" required autofocus class="w-full px-4 py-3 bg-[#222529] border border-[#565856] rounded-lg text-[15px] text-[#d1d2d3] placeholder-[#616061] outline-none focus:border-[#1d9bd1] transition pr-12"><button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-[#9a9b9e] hover:text-[#1d9bd1] transition rounded"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></form>
+      </footer>
+    </section>
+
+# New DM - pick a user
+page /dm/new requires auth layout slack title "New Message"
+  query users: SELECT id, name, email FROM user WHERE id != :current_user.id ORDER BY name
+  html
+    <div class="h-[49px] flex items-center px-4 border-b border-[#ffffff0d] shrink-0">
+      <span class="font-bold text-white text-[15px]">New direct message</span>
+    </div>
+    <div class="flex-1 overflow-y-auto px-5 py-6">
+      <p class="text-[#9a9b9e] text-sm mb-4">Select someone to message:</p>
+      {{each users}}
+      <a href="/dm/{id}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-[#ffffff05] transition mb-1">
+        <div class="w-9 h-9 rounded-lg bg-[#6366f1] flex items-center justify-center text-white text-xs font-bold">{name|truncate:1}</div>
+        <div>
+          <div class="text-[15px] font-semibold text-white">{name}</div>
+          <div class="text-xs text-[#616061]">{email}</div>
+        </div>
+      </a>
+      {{else}}
+      <p class="text-center text-[#9a9b9e] py-10">No other users yet.</p>
+      {{end}}
+    </div>
+
+action /dm/:id/send method POST requires auth
+  validate
+    body: required
+  query: INSERT INTO direct_message (body, sender_id, recipient_id) VALUES (:body, :current_user.id, :id)
+  redirect /dm/:id
+
