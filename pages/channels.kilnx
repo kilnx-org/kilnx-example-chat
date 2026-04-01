@@ -22,7 +22,7 @@ page /channel/:id requires auth layout slack
           <a href="/channel/{ch.id}/pins" class="px-3 py-1.5 text-[13px] text-[#9a9b9e] hover:text-white transition border-b-2 border-transparent hover:border-[#9a9b9e]">Pinned</a>
         </div>
       </div>
-      <div id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4">
+      <div id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4" hx-get="/channel/{ch.id}/messages" hx-trigger="every 5s" hx-swap="innerHTML"
         {{each messages}}
         <div class="msg-row flex gap-3 py-1.5 px-2 -mx-2 rounded-lg relative" id="msg-{id}" data-date="{created|date:\"2006-01-02\"}">
           <div class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold mt-0.5" style="background:{avatar_color}">{author|truncate:1}</div>

@@ -103,7 +103,20 @@ function initChat() {
 
 document.addEventListener('DOMContentLoaded', initChat);
 
-// Re-render after htmx swaps
+// Cancel swap if content hasn't changed (prevents blink)
+var lastContent = '';
+document.body.addEventListener('htmx:beforeSwap', function(e) {
+  if (e.detail.target && e.detail.target.id === 'chat-messages') {
+    var newContent = e.detail.xhr.responseText.trim();
+    if (newContent === lastContent) {
+      e.detail.shouldSwap = false;
+      return;
+    }
+    lastContent = newContent;
+  }
+});
+
 document.body.addEventListener('htmx:afterSwap', function() {
-  renderReactions();
+  var chat = document.getElementById('chat-messages');
+  if (chat) chat.scrollTop = chat.scrollHeight;
 });
