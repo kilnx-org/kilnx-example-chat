@@ -50,7 +50,7 @@ function renderReactions() {
       var emoji = s[0], count = s[1], names = s.slice(2).join(':');
       var form = document.createElement('form');
       form.method = 'POST';
-      form.action = '/messages/' + msgid + '/unreact/' + encodeURIComponent(emoji);
+      form.action = '/messages/' + msgid + '/react';
       form.style.display = 'inline';
       var csrfInput = document.createElement('input');
       csrfInput.type = 'hidden'; csrfInput.name = '_csrf'; csrfInput.value = csrf;
