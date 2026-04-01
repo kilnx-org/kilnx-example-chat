@@ -154,15 +154,15 @@ INSERT INTO message (body, author_id, channel_id, reply_to, created) VALUES
 
 -- Reactions
 INSERT INTO reaction (emoji, author_id, message_id) VALUES
-  ('thumbsup', 3, 1), ('fire', 5, 1),
-  ('thumbsup', 1, 9), ('fire', 4, 9), ('heart', 7, 9),
-  ('thumbsup', 2, (SELECT id FROM message WHERE body LIKE '%45 lines for%' LIMIT 1)),
-  ('fire', 3, (SELECT id FROM message WHERE body LIKE '%45 lines for%' LIMIT 1)),
-  ('thumbsup', 1, (SELECT id FROM message WHERE body LIKE '%Three lines%' LIMIT 1)),
-  ('thumbsup', 5, (SELECT id FROM message WHERE body LIKE '%doStuff%' LIMIT 1)),
-  ('fire', 9, (SELECT id FROM message WHERE body LIKE '%doStuff%' LIMIT 1)),
-  ('heart', 11, (SELECT id FROM message WHERE body LIKE '%TODO fix this%' LIMIT 1)),
-  ('fire', 13, (SELECT id FROM message WHERE body LIKE '%TODO fix this%' LIMIT 1));
+  ('👍', 3, 1), ('🔥', 5, 1),
+  ('👍', 1, 9), ('🔥', 4, 9), ('❤️', 7, 9),
+  ('👍', 2, (SELECT id FROM message WHERE body LIKE '%45 lines for%' LIMIT 1)),
+  ('🔥', 3, (SELECT id FROM message WHERE body LIKE '%45 lines for%' LIMIT 1)),
+  ('👍', 1, (SELECT id FROM message WHERE body LIKE '%Three lines%' LIMIT 1)),
+  ('👍', 5, (SELECT id FROM message WHERE body LIKE '%doStuff%' LIMIT 1)),
+  ('🔥', 9, (SELECT id FROM message WHERE body LIKE '%doStuff%' LIMIT 1)),
+  ('❤️', 11, (SELECT id FROM message WHERE body LIKE '%TODO fix this%' LIMIT 1)),
+  ('🔥', 13, (SELECT id FROM message WHERE body LIKE '%TODO fix this%' LIMIT 1));
 
 -- Favorites
 INSERT INTO favorite (user_id, channel_id) VALUES (1, 6), (1, 1), (2, 2), (2, 6), (3, 7), (3, 2), (4, 3), (4, 6);
