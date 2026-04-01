@@ -1,16 +1,60 @@
 # Kilnx Example: Chat
 
-Slack-style chat application built with [Kilnx](https://kilnx.dev).
+A Slack-style team chat built with [Kilnx](https://kilnx.dev) in a single `.kilnx` file. No JavaScript frameworks, no ORM, no package manager. One file, one binary.
+
+## What it does
+
+A team of 15 developers at a fictional company (XPTO Inc.) uses this chat to coordinate across projects. Channels like `#engineering`, `#project-atlas`, and `#random` contain real conversations about architecture decisions, deploy incidents, and variable naming debates.
 
 ## Features
 
-Channels, threads, DMs, reactions, file uploads, typing indicators, markdown with @mentions, link unfurl, search, favorites, pinning, rate limiting. Tailwind CSS dark theme.
+- **Channels** with descriptions, favorites, and pinning
+- **Threads** with reply counts
+- **Direct messages** between users
+- **Emoji reactions** on messages
+- **Message editing** with (edited) indicator
+- **File attachments** via multipart upload
+- **Typing indicators** via WebSocket
+- **Markdown** with @mentions and link unfurl
+- **Search** across all channels
+- **User profiles** with message stats
+- **Rate limiting** (30 msgs/min, 5 channels/min)
+- **Forgot password** with email or console fallback
+- **Tailwind CSS** dark theme with Slack-style 3-column layout
 
 ## Run locally
 
 ```bash
 kilnx run app.kilnx
 ```
+
+## Seed demo data
+
+Populates 15 users, 8 channels, 70+ messages, threads, reactions, and DMs:
+
+```bash
+./seed.sh
+```
+
+## Demo accounts
+
+| Email | Password | Role |
+|-------|----------|------|
+| `alice@xpto.dev` | `demo123` | admin |
+| `bob@xpto.dev` | `demo123` | admin |
+| `carol@xpto.dev` | `demo123` | member |
+| `david@xpto.dev` | `demo123` | member |
+| `elena@xpto.dev` | `demo123` | member |
+| `frank@xpto.dev` | `demo123` | member |
+| `grace@xpto.dev` | `demo123` | member |
+| `hugo@xpto.dev` | `demo123` | member |
+| `iris@xpto.dev` | `demo123` | member |
+| `jake@xpto.dev` | `demo123` | member |
+| `kira@xpto.dev` | `demo123` | member |
+| `leo@xpto.dev` | `demo123` | member |
+| `maya@xpto.dev` | `demo123` | member |
+| `nina@xpto.dev` | `demo123` | member |
+| `omar@xpto.dev` | `demo123` | member |
 
 ## Deploy
 
