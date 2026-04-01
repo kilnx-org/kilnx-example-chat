@@ -71,11 +71,45 @@ page / title "Kilnx Chat"
         <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-[#e64a19] flex items-center justify-center"><span class="text-white font-black text-sm">K</span></div><span class="font-bold text-white text-lg tracking-tight">Kilnx Chat</span></div>
         <div class="flex items-center gap-3"><a href="/login" class="text-sm text-[#9a9b9e] hover:text-white transition font-medium px-4 py-2">Sign in</a><a href="/register" class="text-sm bg-white text-[#0c0c0e] font-semibold px-4 py-2 rounded-lg hover:bg-[#e4e4e7] transition">Get started free</a></div>
       </nav>
-      <section class="relative px-6 sm:px-10 pt-16 sm:pt-24 pb-20 text-center max-w-4xl mx-auto">
+      <section class="relative px-6 sm:px-10 pt-16 sm:pt-24 pb-16 text-center max-w-4xl mx-auto">
         <div class="glow bg-[#e64a19] -top-40 left-1/2 -translate-x-1/2"></div>
         <h1 class="anim anim-d1 text-4xl sm:text-6xl font-extrabold text-white leading-[1.1] tracking-tight mb-6">Team messaging<br><span class="bg-gradient-to-r from-[#e64a19] to-[#ff6e40] bg-clip-text text-transparent">without the bloat</span></h1>
         <p class="anim anim-d2 text-lg sm:text-xl text-[#9a9b9e] max-w-xl mx-auto mb-10 leading-relaxed">Channels, threads, DMs, reactions, file sharing, markdown, and real-time typing indicators. Built with zero JavaScript frameworks.</p>
-        <div class="anim anim-d3 flex flex-col sm:flex-row gap-3 justify-center"><a href="/register" class="px-8 py-3.5 bg-[#e64a19] hover:bg-[#ff6e40] text-white font-bold rounded-lg transition-all text-sm">Start chatting</a><a href="https://kilnx.dev" class="px-8 py-3.5 bg-[#ffffff08] border border-[#ffffff15] text-[#d1d2d3] hover:text-white font-semibold rounded-lg transition text-sm">Learn about Kilnx</a></div>
+        <div class="anim anim-d3 flex flex-col sm:flex-row gap-3 justify-center mb-16"><a href="/register" class="px-8 py-3.5 bg-[#e64a19] hover:bg-[#ff6e40] text-white font-bold rounded-lg transition-all text-sm">Start chatting</a><a href="https://kilnx.dev" class="px-8 py-3.5 bg-[#ffffff08] border border-[#ffffff15] text-[#d1d2d3] hover:text-white font-semibold rounded-lg transition text-sm">Learn about Kilnx</a></div>
+        <div class="anim anim-d4 relative mx-auto max-w-3xl rounded-xl border border-[#ffffff10] bg-[#111113] shadow-2xl shadow-black/50 overflow-hidden">
+          <div class="flex items-center gap-1.5 px-4 py-2.5 border-b border-[#ffffff08]"><span class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></span><span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span><span class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></span><span class="ml-3 text-xs text-[#616061]">kilnx-chat</span></div>
+          <div class="flex h-[300px] sm:h-[360px]">
+            <div class="w-[180px] bg-[#19171d] border-r border-[#ffffff08] p-3 hidden sm:block">
+              <p class="text-[10px] text-[#9a9b9e] uppercase tracking-wider font-semibold mb-2">Channels</p>
+              <div class="space-y-0.5"><div class="flex items-center gap-1.5 px-2 py-1 rounded bg-[#1164a3] text-white text-xs"><span class="text-[10px]">#</span> general</div><div class="flex items-center gap-1.5 px-2 py-1 rounded text-[#bcbdc0] text-xs"><span class="text-[10px]">#</span> engineering</div><div class="flex items-center gap-1.5 px-2 py-1 rounded text-[#bcbdc0] text-xs"><span class="text-[10px]">#</span> project-atlas</div></div>
+              <p class="text-[10px] text-[#9a9b9e] uppercase tracking-wider font-semibold mt-4 mb-2">DMs</p>
+              <div class="space-y-0.5"><div class="flex items-center gap-1.5 px-2 py-1 text-[#bcbdc0] text-xs"><span class="w-1.5 h-1.5 rounded-full bg-[#2bac76]"></span> Bob</div><div class="flex items-center gap-1.5 px-2 py-1 text-[#bcbdc0] text-xs"><span class="w-1.5 h-1.5 rounded-full bg-[#616061]"></span> Carol</div></div>
+            </div>
+            <div class="flex-1 flex flex-col">
+              <div class="px-4 py-2 border-b border-[#ffffff08] flex items-center gap-2"><span class="text-[#e8912d] font-bold">#</span><span class="text-white text-sm font-semibold">general</span></div>
+              <div class="flex-1 px-4 py-3 space-y-3 overflow-hidden">
+                <div class="flex gap-2.5"><div class="w-7 h-7 rounded bg-[#6366f1] flex items-center justify-center text-white text-[9px] font-bold shrink-0">A</div><div><div class="flex items-baseline gap-1.5"><span class="text-xs font-bold text-white">Alice</span><span class="text-[9px] text-[#616061]">2m ago</span></div><p class="text-xs text-[#d1d2d3]">We need to rethink the migration strategy for Atlas.</p></div></div>
+                <div class="flex gap-2.5"><div class="w-7 h-7 rounded bg-[#e64a19] flex items-center justify-center text-white text-[9px] font-bold shrink-0">B</div><div><div class="flex items-baseline gap-1.5"><span class="text-xs font-bold text-white">Bob</span><span class="text-[9px] text-[#616061]">1m ago</span></div><p class="text-xs text-[#d1d2d3]">v0.1.1 just shipped --dry-run. Have you tried it?</p><div class="flex gap-1 mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded border border-[#ffffff10] bg-[#ffffff05]">👍 3</span></div><div class="mt-1"><span class="text-[9px] text-[#1d9bd1] font-semibold">2 replies</span></div></div></div>
+                <div class="flex gap-2.5"><div class="w-7 h-7 rounded bg-[#2bac76] flex items-center justify-center text-white text-[9px] font-bold shrink-0">C</div><div><div class="flex items-baseline gap-1.5"><span class="text-xs font-bold text-white">Carol</span><span class="text-[9px] text-[#616061]">just now</span></div><p class="text-xs text-[#d1d2d3]">The fetch keyword is clean. Three lines for an API call.</p></div></div>
+              </div>
+              <div class="px-3 py-2 border-t border-[#ffffff08]"><div class="text-[9px] text-[#9a9b9e] mb-1">Bob is typing...</div><div class="bg-[#222529] border border-[#565856] rounded px-3 py-1.5 text-[11px] text-[#616061]">Message #general</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="px-6 sm:px-10 py-16 max-w-3xl mx-auto">
+        <div class="grid sm:grid-cols-2 gap-x-10 gap-y-6 text-sm">
+          <div><span class="text-white font-semibold">Channels and threads</span><span class="text-[#9a9b9e]"> keep conversations organized without forcing structure.</span></div>
+          <div><span class="text-white font-semibold">Direct messages</span><span class="text-[#9a9b9e]"> for private conversations between team members.</span></div>
+          <div><span class="text-white font-semibold">Reactions and pins</span><span class="text-[#9a9b9e]"> so decisions don't get lost in the scroll.</span></div>
+          <div><span class="text-white font-semibold">Markdown and @mentions</span><span class="text-[#9a9b9e]"> with inline formatting toolbar.</span></div>
+          <div><span class="text-white font-semibold">File attachments</span><span class="text-[#9a9b9e]"> uploaded directly in the message input.</span></div>
+          <div><span class="text-white font-semibold">Typing indicators</span><span class="text-[#9a9b9e]"> via WebSocket. Zero polling for presence.</span></div>
+        </div>
+      </section>
+      <section class="px-6 sm:px-10 py-12 text-center border-t border-[#ffffff08]">
+        <p class="text-sm text-[#9a9b9e] mb-6">This entire app is declared in <a href="https://github.com/kilnx-org/kilnx-example-chat" class="text-[#e64a19] hover:text-[#ff6e40] transition">.kilnx files</a>. No React, no Express, no npm. One binary.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center"><a href="/register" class="px-8 py-3.5 bg-[#e64a19] hover:bg-[#ff6e40] text-white font-bold rounded-lg transition-all text-sm">Start chatting</a><a href="/login" class="px-8 py-3.5 bg-[#ffffff08] border border-[#ffffff15] text-[#d1d2d3] hover:text-white font-semibold rounded-lg transition text-sm">Sign in</a></div>
       </section>
       <footer class="px-6 sm:px-10 py-8 border-t border-[#ffffff08] flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded bg-[#e64a19] flex items-center justify-center"><span class="text-white font-black text-[10px]">K</span></div><span class="text-sm text-[#616061]">Kilnx Chat</span></div><p class="text-xs text-[#616061]">Built with <a href="https://kilnx.dev" class="text-[#e64a19] hover:text-[#ff6e40] transition">Kilnx</a></p></footer>
     </div>
