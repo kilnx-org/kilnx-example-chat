@@ -1,7 +1,6 @@
 # Channel view (main chat)
 page /channel/:id requires auth layout slack
   query ch: SELECT c.id, c.name, c.description, c.created, u.name as creator FROM channel c JOIN user u ON u.id = c.creator_id WHERE c.id = :id
-  query messages: SELECT m.id, m.body, m.author_id, m.reply_to, m.edited_at, m.pinned, m.attachment, m.created, u.name as author, u.avatar_color, (SELECT COUNT(*) FROM message r WHERE r.reply_to = m.id) as reply_count, (SELECT GROUP_CONCAT(r2.emoji || ' ' || cnt, '  ') FROM (SELECT r2.emoji, COUNT(*) as cnt FROM reaction r2 WHERE r2.message_id = m.id GROUP BY r2.emoji) r2) as reactions FROM message m JOIN user u ON u.id = m.author_id WHERE m.channel_id = :id AND m.reply_to = 0 ORDER BY m.created ASC paginate 100
   html
     <div class="flex flex-col flex-1 overflow-hidden">
       <div class="shrink-0 border-b border-[#ffffff0d]">
@@ -22,38 +21,11 @@ page /channel/:id requires auth layout slack
           <a href="/channel/{ch.id}/pins" class="px-3 py-1.5 text-[13px] text-[#9a9b9e] hover:text-white transition border-b-2 border-transparent hover:border-[#9a9b9e]">Pinned</a>
         </div>
       </div>
-      <div id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4" hx-get="/channel/{ch.id}/messages" hx-trigger="every 5s" hx-swap="morph:innerHTML" hx-ext="morph"
-        {{each messages}}
-        <div class="msg-row flex gap-3 py-1.5 px-2 -mx-2 rounded-lg relative" id="msg-{id}" data-date="{created|date:\"2006-01-02\"}">
-          <div class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold mt-0.5" style="background:{avatar_color}">{author|truncate:1}</div>
-          <div class="min-w-0 flex-1">
-            <div class="flex items-baseline gap-2">
-              {{if pinned}}<span class="text-[#e8912d] text-[11px]" title="Pinned">📌</span>{{end}}
-              <span class="text-[15px] font-bold text-white">{author}</span>
-              <time class="text-[11px] text-[#616061]">{created|timeago}</time>
-              {{if edited_at}}<span class="text-[11px] text-[#616061]">(edited)</span>{{end}}
-            </div>
-            <p class="text-[15px] text-[#d1d2d3] leading-[1.46] break-words">{body|markdown|unfurl|raw}</p>
-            {{if reactions}}<div class="flex gap-1 mt-1.5 flex-wrap">{reactions|raw}</div>{{end}}
-            {{if reply_count}}<a href="/channel/{ch.id}/thread/{id}" class="inline-flex items-center gap-1.5 mt-1 text-[#1d9bd1] text-xs font-semibold hover:underline"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg> {reply_count} replies</a>{{end}}
-          </div>
-          <div class="msg-actions absolute -top-3 right-2 flex items-center bg-[#1a1d21] border border-[#ffffff1a] rounded-lg shadow-lg overflow-hidden">
-            <form hx-post="/messages/{id}/react" hx-target="#chat-messages" hx-swap="morph:innerHTML" class="inline"><input type="hidden" name="_csrf" value="{csrf}"><input type="hidden" name="channel_id" value="{ch.id}"><button type="submit" name="emoji" value="👍" class="p-1.5 hover:bg-[#ffffff0d] transition text-sm">👍</button></form>
-            <form hx-post="/messages/{id}/react" hx-target="#chat-messages" hx-swap="morph:innerHTML" class="inline"><input type="hidden" name="_csrf" value="{csrf}"><input type="hidden" name="channel_id" value="{ch.id}"><button type="submit" name="emoji" value="🔥" class="p-1.5 hover:bg-[#ffffff0d] transition text-sm">🔥</button></form>
-            <form hx-post="/messages/{id}/react" hx-target="#chat-messages" hx-swap="morph:innerHTML" class="inline"><input type="hidden" name="_csrf" value="{csrf}"><input type="hidden" name="channel_id" value="{ch.id}"><button type="submit" name="emoji" value="❤️" class="p-1.5 hover:bg-[#ffffff0d] transition text-sm">❤️</button></form>
-            <a href="/channel/{ch.id}/edit/{id}" class="p-1.5 text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] transition" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></a>
-            <a href="/channel/{ch.id}/thread/{id}" class="p-1.5 text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] transition" title="Reply"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg></a>
-            <form method="POST" action="/messages/{id}/pin" class="inline"><input type="hidden" name="_csrf" value="{csrf}"><input type="hidden" name="channel_id" value="{ch.id}"><button type="submit" class="p-1.5 text-[#9a9b9e] hover:text-[#e8912d] hover:bg-[#ffffff0d] transition">📌</button></form>
-            <form method="POST" action="/messages/{id}/delete" data-confirm="Delete?" class="inline"><input type="hidden" name="_csrf" value="{csrf}"><button type="submit" class="p-1.5 text-[#9a9b9e] hover:text-red-400 hover:bg-[#ffffff0d] transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></form>
-          </div>
-        </div>
-        {{else}}
-        <div class="py-20 text-center"><div class="text-4xl mb-3">👋</div><h2 class="text-xl font-bold text-white mb-1">Welcome to #{ch.name}</h2><p class="text-[#9a9b9e] text-sm">This is the very beginning of the <strong class="text-white">#{ch.name}</strong> channel.</p></div>
-        {{end}}
-      </div>
+      <div id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4" hx-get="/channel/{ch.id}/messages" hx-trigger="load, every 5s" hx-swap="morph:innerHTML" hx-ext="morph"></div>
       <div id="typing-indicator" class="px-5 h-6 text-xs text-[#9a9b9e] shrink-0"></div>
+      <div id="lightbox" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/90" onclick="closeLightbox()"><img id="lightbox-img" src="" class="max-w-[90vw] max-h-[90vh] rounded-lg object-contain" onclick="event.stopPropagation()"><button class="absolute top-4 right-4 text-white text-4xl font-bold leading-none hover:text-[#9a9b9e] transition" onclick="closeLightbox()">&times;</button></div>
       <div class="px-5 pb-3 shrink-0">
-        <form method="POST" action="/channel/{ch.id}/send" enctype="multipart/form-data" class="bg-[#222529] border border-[#565856] rounded-lg focus-within:border-[#1d9bd1] transition overflow-hidden">
+        <form id="send-form" method="POST" action="/channel/{ch.id}/send" enctype="multipart/form-data" class="bg-[#222529] border border-[#565856] rounded-lg focus-within:border-[#1d9bd1] transition overflow-hidden" onsubmit="return validateSend()">
           <input type="hidden" name="_csrf" value="{csrf}">
           <div class="flex items-center gap-0.5 px-2.5 py-1 border-b border-[#ffffff0d]">
             <button type="button" onclick="wrapText('**','**')" class="w-7 h-7 flex items-center justify-center text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] rounded transition" title="Bold"><span class="text-[13px] font-bold">B</span></button>
@@ -71,11 +43,11 @@ page /channel/:id requires auth layout slack
           <textarea id="msg-input" name="body" placeholder="Message #{ch.name}" required autofocus rows="1" class="w-full px-4 py-2.5 bg-transparent text-[15px] text-[#d1d2d3] placeholder-[#616061] outline-none resize-none overflow-hidden min-h-[40px]" oninput="sendTyping();this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.closest('form').submit()}"></textarea>
           <div class="flex items-center justify-between px-2.5 py-1.5 border-t border-[#ffffff0d]">
             <div class="flex items-center gap-0.5">
-              <label class="w-7 h-7 flex items-center justify-center text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] rounded transition cursor-pointer" title="Attach file"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg><input type="file" name="attachment" class="hidden" onchange="this.closest('label').querySelector('svg').style.color='#1d9bd1'"></label>
               <button type="button" class="w-7 h-7 flex items-center justify-center text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] rounded transition" title="Formatting"><span class="text-[13px] font-bold">Aa</span></button>
               <button type="button" onclick="wrapText('@','')" class="w-7 h-7 flex items-center justify-center text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] rounded transition" title="Mention"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9"/></svg></button>
               <div class="w-px h-4 bg-[#ffffff15] mx-1"></div>
-              <label class="w-7 h-7 flex items-center justify-center text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] rounded transition cursor-pointer" title="Upload file"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><input type="file" name="attachment" class="hidden" onchange="this.closest('label').querySelector('svg').style.color='#1d9bd1'"></label>
+              <label id="attach-label" class="w-7 h-7 flex items-center justify-center text-[#9a9b9e] hover:text-white hover:bg-[#ffffff0d] rounded transition cursor-pointer" title="Attach file"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><input type="file" name="attachment" id="attach-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.zip" onchange="onAttachChange(this)"></label>
+              <span id="attach-name" class="text-[11px] text-[#1d9bd1] truncate max-w-[120px] hidden"></span>
             </div>
             <div class="flex items-center gap-3">
               <span class="text-[11px] text-[#616061] hidden sm:inline">Shift + Return for new line</span>
@@ -90,6 +62,11 @@ page /channel/:id requires auth layout slack
       function insertLine(prefix){var i=document.getElementById('msg-input'),s=i.selectionStart,t=i.value;var nl=s>0&&t[s-1]!=='\n'?'\n':'';i.value=t.slice(0,s)+nl+prefix+t.slice(s);var pos=s+nl.length+prefix.length;i.focus();i.setSelectionRange(pos,pos);autoSize(i)}
       function insertBlock(fence){var i=document.getElementById('msg-input'),s=i.selectionStart,e=i.selectionEnd,t=i.value;var sel=t.slice(s,e)||'code';var nl=s>0&&t[s-1]!=='\n'?'\n':'';i.value=t.slice(0,s)+nl+fence+'\n'+sel+'\n'+fence+t.slice(e);var pos=s+nl.length+fence.length+1;i.focus();i.setSelectionRange(pos,pos+sel.length);autoSize(i)}
       function autoSize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,150)+'px'}
+      function onAttachChange(inp){var name=document.getElementById('attach-name');var lbl=document.getElementById('attach-label');if(inp.files&&inp.files[0]){name.textContent=inp.files[0].name;name.classList.remove('hidden');lbl.querySelector('svg').setAttribute('style','color:#1d9bd1')}else{name.textContent='';name.classList.add('hidden');lbl.querySelector('svg').removeAttribute('style')}}
+      function validateSend(){var body=document.getElementById('msg-input').value.trim();var att=document.getElementById('attach-input').files.length>0;if(!body&&!att){document.getElementById('msg-input').focus();return false}return true}
+      function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.remove('hidden');document.body.style.overflow='hidden'}
+      function closeLightbox(){document.getElementById('lightbox').classList.add('hidden');document.body.style.overflow=''}
+      document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox()})
       var ws,typingTimer;function sendTyping(){if(!ws||ws.readyState!==1){try{ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/typing/{ch.id}');ws.onmessage=function(e){var d=document.getElementById('typing-indicator');d.textContent=e.data;clearTimeout(typingTimer);typingTimer=setTimeout(function(){d.textContent=''},3000)}}catch(e){}}if(ws&&ws.readyState===1)ws.send('{me.name} is typing...')}
     </script>
 

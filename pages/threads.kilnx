@@ -66,9 +66,10 @@ page /channel/:cid/thread/:mid requires auth layout slack
           </div>
           <p class="text-[15px] text-[#d1d2d3] leading-[1.46] break-words">{body|markdown|unfurl|raw}</p>
         </div>
-        <div class="msg-actions absolute -top-3 right-2 flex items-center bg-[#1a1d21] border border-[#ffffff1a] rounded-lg shadow-lg overflow-hidden">
+        <div class="msg-actions absolute top-0 right-2 flex items-center bg-[#1a1d21] border border-[#ffffff1a] rounded-lg shadow-lg overflow-hidden">
           <form method="POST" action="/messages/{id}/delete" data-confirm="Delete reply?" class="inline">
             <input type="hidden" name="_csrf" value="{csrf}">
+            <input type="hidden" name="channel_id" value="{ch.id}">
             <button type="submit" class="p-1.5 text-[#9a9b9e] hover:text-red-400 hover:bg-[#ffffff0d] transition">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>

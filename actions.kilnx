@@ -5,8 +5,6 @@ action /channels/create method POST requires auth
   redirect /home
 
 action /channel/:id/send method POST requires auth
-  validate
-    body: required
   query: INSERT INTO message (body, author_id, channel_id, attachment) VALUES (:body, :current_user.id, :id, :attachment)
   redirect /channel/:id
 
@@ -42,7 +40,7 @@ action /messages/:id/react method POST requires auth
   query: INSERT INTO reaction (emoji, author_id, message_id) SELECT :emoji, :current_user.id, :id WHERE NOT EXISTS (SELECT 1 FROM reaction WHERE emoji = :emoji AND author_id = :current_user.id AND message_id = :id)
   redirect /channel/:channel_id
 
-action /messages/:id/rmreact method POST requires auth
+action /messages/:id/rmreact/:emoji method POST requires auth
   query: DELETE FROM reaction WHERE emoji = :emoji AND author_id = :current_user.id AND message_id = :id
   redirect /channel/:channel_id
 

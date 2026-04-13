@@ -56,7 +56,7 @@ function renderReactions() {
       var emoji = s[0], count = s[1], names = s.slice(2).join(':');
       var form = document.createElement('form');
       form.method = 'POST';
-      form.action = '/messages/' + msgid + '/rmreact';
+      form.action = '/messages/' + msgid + '/rmreact/' + emoji;
       form.style.display = 'inline';
       form.setAttribute('hx-boost', 'false');
 
@@ -103,8 +103,21 @@ function initChat() {
 
 document.addEventListener('DOMContentLoaded', initChat);
 
-// Scroll to bottom after new messages
+// Scroll to bottom after new messages (only if already near bottom)
 document.body.addEventListener('htmx:afterSwap', function() {
   var chat = document.getElementById('chat-messages');
-  if (chat) chat.scrollTop = chat.scrollHeight;
+  if (!chat) return;
+  var nearBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 120;
+  if (nearBottom) chat.scrollTop = chat.scrollHeight;
+});
+
+// Delete message via fetch — no page reload, no scroll jump
+document.addEventListener('submit', function(e) {
+  var form = e.target;
+  if (!form.action || !/\/messages\/\d+\/delete/.test(form.action)) return;
+  e.preventDefault();
+  if (form.dataset.confirm && !confirm(form.dataset.confirm)) return;
+  var row = form.closest('[id^="msg-"]');
+  fetch(form.action, { method: 'POST', body: new FormData(form), redirect: 'manual' })
+    .then(function() { if (row) row.remove(); });
 });
